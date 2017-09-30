@@ -1,5 +1,5 @@
 CC=g++
-CXXFLAGS =-std=c++11 -gdwarf-3 -Wall
+CXXFLAGS =-std=c++11 -gdwarf-3 
 CPPFLAGS += -O0
 CPPFLAGS += -g
 LDFLAGS += -g

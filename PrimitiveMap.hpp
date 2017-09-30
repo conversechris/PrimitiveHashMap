@@ -1,5 +1,5 @@
-
-/* Author: Christopher Converse
+/*
+ * Author: Christopher Converse
  *         cconversee@gmail.com
  * 
  * Header file for a fixed-size hash map associating string 
@@ -13,8 +13,6 @@
 #include <string>
 
 using namespace std;
-
-#include <iostream>
 
 #define EMPTY_STRING ""
 
@@ -74,14 +72,12 @@ class PrimitiveMap {
      */
     const float load();
 
-    void printTable();
-
   private:
-    typedef pair <string, T> TPair; // Define pair that holds key & T value
-    TPair * map; // Array to store TPairs which holds they key & T value
-    bool spaceDeleted[]; // Keep track of which elements in map are deleted
-    unsigned int capacity; // Size of the hash map
-    unsigned int itemsStored; // Number of items stored currently
+    typedef pair <string, T> TPair; /* Define pair that holds key & T value */
+    TPair * map; /* Array to store TPairs which holds they key & T value */
+    bool * spaceDeleted; /* Keep track of which elements in map are deleted */
+    float capacity; /* Size of the hash map */
+    float itemsStored; /* Number of items stored currently */
 
     /*
      * Function Name: hash
@@ -98,6 +94,7 @@ class PrimitiveMap {
     const int hash(string &key);
 };
 
+/* Constructor method */
 template <class T> 
 PrimitiveMap<T>::PrimitiveMap(int size) : itemsStored(0), capacity(0) {
 
@@ -107,24 +104,31 @@ PrimitiveMap<T>::PrimitiveMap(int size) : itemsStored(0), capacity(0) {
   }
 
   capacity = size;
-  map = new TPair[capacity];
+  map = new TPair[(int)capacity];
+  spaceDeleted = new bool[(int)capacity];
 
   for (int i = 0; i < capacity; i++) {
     spaceDeleted[i] = false;
   }
-  capacity = size;
 }
 
+/* Destructor method */
 template <class T>
 PrimitiveMap<T>::~PrimitiveMap(void) { 
   delete []map;
+  map = NULL;
+
+  delete []spaceDeleted;
+  spaceDeleted = NULL;
 }
 
+/* Insertion method */
 template <class T>
 const bool PrimitiveMap<T>::set(string &key, T &value) {
 
+
   /* Check if hashmap is full */ 
-  if (itemsStored > capacity) {
+  if (itemsStored >= capacity) {
     return false;
   }
 
@@ -149,17 +153,17 @@ const bool PrimitiveMap<T>::set(string &key, T &value) {
   map[hashVal].first = key;
   map[hashVal].second = value;
   itemsStored = itemsStored + 1;
-  //cout << "itemsStored is " << itemsStored << endl;
   spaceDeleted[hashVal] = false;
   return true;
 }
 
+/* Lookup method */
 template <class T>
 T PrimitiveMap<T>::get(string &key) { 
 
   int counter = 0; /* Keep track of whether entire table is searched */
   int hashVal = hash(key); /* Get hash value of key */
-  T returnVal = NULL;
+  T returnVal = NULL; /* Return value. If not in hashmap, NULL is returned */
 
   /* Key not found */
   if (map[hashVal].first == EMPTY_STRING && spaceDeleted[hashVal] == false) {
@@ -194,6 +198,7 @@ T PrimitiveMap<T>::get(string &key) {
   return returnVal;
 }
 
+/* Deletion method */
 template <class T>
 T PrimitiveMap<T>::deleteKey(string &key){ 
 
@@ -262,16 +267,7 @@ const int PrimitiveMap<T>::hash(string &key) {
   h ^= (h >> 11);
   h += (h << 15);
 
-  return h % capacity;
-
-}
-
-template <class T>
-void PrimitiveMap<T>::printTable() {
-  for (int i = 0; i < capacity; i++) {
-    cout << "HERE" << endl;
-    cout << "Key/Value stored at " << i << ": " << map[i].first << "/" << map[i].second << endl;
-  }
+  return h % (int)capacity;
 }
 
 #endif // PRIMITIVEMAP_H
